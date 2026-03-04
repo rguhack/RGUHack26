@@ -52,6 +52,14 @@ const Index = () => {
 
   const isAudioRunning = !["fired", "promoted"].includes(state.stage);
 
+  const tryStartAudio = useCallback(() => {
+    const audio = bgAudioRef.current;
+    if (!audio || !isAudioRunning) return;
+
+    void audio.play().catch(() => {
+    });
+  }, [isAudioRunning]);
+
   useEffect(() => {
     const audio = new Audio("/background.mp3");
     audio.loop = true;
@@ -76,14 +84,29 @@ const Index = () => {
     if (!audio) return;
 
     if (isAudioRunning) {
-      void audio.play().catch(() => {
-      });
+      tryStartAudio();
       return;
     }
 
     audio.pause();
     audio.currentTime = 0;
-  }, [isAudioRunning]);
+  }, [isAudioRunning, tryStartAudio]);
+
+  useEffect(() => {
+    if (!isAudioRunning) return;
+
+    const resumeAudio = () => {
+      tryStartAudio();
+    };
+
+    window.addEventListener("pointerdown", resumeAudio, { passive: true });
+    window.addEventListener("keydown", resumeAudio);
+
+    return () => {
+      window.removeEventListener("pointerdown", resumeAudio);
+      window.removeEventListener("keydown", resumeAudio);
+    };
+  }, [isAudioRunning, tryStartAudio]);
 
   // Delayed stage transition (5s gap)
   const delayedStage = useCallback(
@@ -176,9 +199,10 @@ const Index = () => {
   // ── Handlers ──
 
   const handleIntroStart = useCallback(() => {
+    tryStartAudio();
     setStage("procrastination");
     delayedStage("teams", STAGE_DELAY_MS);
-  }, [setStage, delayedStage]);
+  }, [setStage, delayedStage, tryStartAudio]);
 
   const handleTeamsClose = useCallback(() => {
     setIsPunishment(true);
