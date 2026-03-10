@@ -35,11 +35,11 @@ export const Taskbar: React.FC<TaskbarProps> = ({ volume, setVolume }) => {
       <div className="flex items-center gap-1">
         <button className="xp-start-btn">
           <Monitor size={16} />
-          <span>Start</span>
+          <span className="hidden sm:inline">Start</span>
         </button>
-        <div className="h-6 w-px bg-border mx-1" />
+        <div className="hidden sm:block h-6 w-px bg-border mx-1" />
         {/* Quick launch icons (Win7 style) */}
-        <div className="flex items-center gap-0.5">
+        <div className="hidden sm:flex items-center gap-0.5">
           {[
             { icon: <Globe size={14} />, label: "Chrome" },
             { icon: <MessageCircle size={14} />, label: "Teams" },

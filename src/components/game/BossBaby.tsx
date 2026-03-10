@@ -50,7 +50,7 @@ export const BossBaby: React.FC<BossBabyProps> = ({
         animation: "bossEnter 0.4s ease-out",
       }}
     >
-      <div className="xp-window w-[520px]">
+      <div className="xp-window w-[min(520px,95vw)]">
         {/* XP Title Bar */}
         <div className="xp-title-bar">
           <div className="flex items-center gap-1.5">
@@ -88,7 +88,7 @@ export const BossBaby: React.FC<BossBabyProps> = ({
                   <button className="xp-button-primary" onClick={onDismiss}>
                     {dismissLabel ??
                       (message.toLowerCase().includes("email") ||
-                      message.toLowerCase().includes("outlook")
+                        message.toLowerCase().includes("outlook")
                         ? "AGH, no..."
                         : "AGH, fine...")}
                   </button>

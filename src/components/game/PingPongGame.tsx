@@ -14,6 +14,11 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
   playerAvatar,
   botAvatar,
 }) => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const CANVAS_W = 350;
+  const CANVAS_H = 240;
+  const canvasScale = isMobile ? Math.min(1, (window.innerWidth - 48) / CANVAS_W) : 1;
+
   // Physics Constants for perfectly consistent speed
   const CONSTANT_VX = 4.0;
   const MAX_VY = 3.5;
@@ -37,6 +42,7 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
     aiScore: number;
     running: boolean;
     keysDown: Set<string>;
+    framesSinceScore: number;
   }>({
     ballX: 175,
     ballY: 120,
@@ -48,6 +54,7 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
     aiScore: 0,
     running: true,
     keysDown: new Set(),
+    framesSinceScore: 0,
   });
 
   const [scores, setScores] = useState({ player: 0, ai: 0 });
@@ -68,12 +75,44 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
     window.addEventListener("keydown", keyDown);
     window.addEventListener("keyup", keyUp);
 
+    // Touch controls – drag anywhere on canvas to control paddle
+    const touchHandler = (e: TouchEvent) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      const relY = (touch.clientY - rect.top) * (CANVAS_H / rect.height);
+      g.paddleY = Math.max(0, Math.min(CANVAS_H - 60, relY - 30));
+    };
+    canvas.addEventListener("touchmove", touchHandler, { passive: false });
+    canvas.addEventListener("touchstart", touchHandler as EventListener, { passive: true });
+
     const PADDLE_SPEED = 5;
     const AI_PADDLE_SPEED = 2.2; // Optimized for consistent ball speed
     const PADDLE_H = 60;
 
     const loop = () => {
       if (!g.running) return;
+
+      // Increment frames counter
+      g.framesSinceScore++;
+
+      // If rally lasts too long, gradually speed up the ball (linear)
+      const RALLY_TIMEOUT_FRAMES = 300; // ~5 seconds at 60fps
+      if (g.framesSinceScore > RALLY_TIMEOUT_FRAMES) {
+        const excessFrames = g.framesSinceScore - RALLY_TIMEOUT_FRAMES;
+        const boost = excessFrames * 0.02; // linear: add 0.02 pixels/frame per excess frame
+        
+        // Calculate base speed magnitude
+        const baseMagnitude = Math.sqrt(CONSTANT_VX * CONSTANT_VX + BALL_SPEED_Y_START * BALL_SPEED_Y_START);
+        const currentMagnitude = Math.sqrt(g.ballVX * g.ballVX + g.ballVY * g.ballVY);
+        const targetMagnitude = baseMagnitude + boost;
+        
+        // Scale velocity to new magnitude while preserving direction
+        const scale = targetMagnitude / currentMagnitude;
+        g.ballVX *= scale;
+        g.ballVY *= scale;
+      }
 
       // Keyboard paddle control (W/S or Up/Down)
       if (
@@ -139,6 +178,7 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
         g.ballY = 120;
         g.ballVX = CONSTANT_VX;
         g.ballVY = BALL_SPEED_Y_START;
+        g.framesSinceScore = 0;
       }
       if (g.ballX > 350) {
         g.playerScore++;
@@ -152,6 +192,7 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
         g.ballY = 120;
         g.ballVX = -CONSTANT_VX;
         g.ballVY = BALL_SPEED_Y_START;
+        g.framesSinceScore = 0;
       }
 
       // ── DRAWING ──
@@ -245,6 +286,8 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
       g.running = false;
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
+      canvas.removeEventListener("touchmove", touchHandler);
+      canvas.removeEventListener("touchstart", touchHandler as EventListener);
     };
   }, [onWin, onLose]);
 
@@ -272,20 +315,31 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
       </div>
 
       <p className="text-xs text-card-foreground">
-        W/S or ↑/↓ to move. First to 3 wins!
+        {isMobile ? "Touch the canvas to move your paddle." : "W/S or ↑/↓ to move."} First to 3 wins!
       </p>
 
-      <canvas
-        ref={canvasRef}
-        width={350}
-        height={240}
-        className="border border-border shadow-lg"
+      <div
         style={{
-          border: `2px solid ${COLOR_PRIMARY}`,
-          borderRadius: 10,
-          background: COLOR_BG,
+          width: CANVAS_W * canvasScale,
+          height: CANVAS_H * canvasScale,
+          overflow: "hidden",
+          flexShrink: 0,
         }}
-      />
+      >
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_W}
+          height={CANVAS_H}
+          style={{
+            transform: `scale(${canvasScale})`,
+            transformOrigin: "top left",
+            border: `2px solid ${COLOR_PRIMARY}`,
+            borderRadius: 10,
+            background: COLOR_BG,
+            display: "block",
+          }}
+        />
+      </div>
 
       <div className="text-xs text-muted-foreground font-mono">
         YOU: {scores.player} | MARTY SUPREME: {scores.ai}

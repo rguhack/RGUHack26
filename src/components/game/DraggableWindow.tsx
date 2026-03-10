@@ -28,19 +28,25 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
   closable = true,
   bodyStyle,
 }) => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const effectiveWidth = isMobile ? Math.min(width, window.innerWidth - 16) : width;
+
   const [pos, setPos] = useState({
-    x:
-      initialX ??
-      Math.max(50, (window.innerWidth - width) / 2 + Math.random() * 60 - 30),
-    y:
-      initialY ??
-      Math.max(30, window.innerHeight / 2 - 200 + Math.random() * 60 - 30),
+    x: isMobile
+      ? Math.max(8, (window.innerWidth - effectiveWidth) / 2)
+      : (initialX ??
+        Math.max(50, (window.innerWidth - width) / 2 + Math.random() * 60 - 30)),
+    y: isMobile
+      ? 155
+      : (initialY ??
+        Math.max(30, window.innerHeight / 2 - 200 + Math.random() * 60 - 30)),
   });
   const dragging = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      if (isMobile) return;
       dragging.current = true;
       offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
 
@@ -60,18 +66,18 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
     },
-    [pos],
+    [pos, isMobile],
   );
 
   return (
     <div
       className="xp-window fixed z-40"
-      style={{ left: pos.x, top: pos.y, width }}
+      style={{ left: pos.x, top: pos.y, width: effectiveWidth }}
     >
       <div
         className={active ? "xp-title-bar" : "xp-title-bar-inactive"}
         onMouseDown={onMouseDown}
-        style={{ cursor: "grab" }}
+        style={{ cursor: isMobile ? "default" : "grab" }}
       >
         <div className="flex items-center gap-1.5">
           {icon}

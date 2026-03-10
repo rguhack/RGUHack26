@@ -34,7 +34,13 @@ const SHAPES = [
     [0, 1, 1],
     [1, 1, 1],
   ], // J: 3×3 chunky J
+  [
+    [1, 1, 1, 1],
+  ], // I: 1×4 bar
 ];
+
+const CANVAS_W = COLS * CELL;
+const CANVAS_H = ROWS * CELL;
 
 const PRIORITIES = ["CRIT", "HIGH", "MED", "LOW"];
 const COLORS = ["#ff3333", "#fb5607", "#ffbe0b", "#22c55e"];
@@ -50,10 +56,14 @@ export const TetrisGame: React.FC<TetrisGameProps> = ({
   onTopReached,
   onCleared,
 }) => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const canvasScale = isMobile ? Math.min(1, (window.innerWidth - 48) / CANVAS_W) : 1;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [flashMsg, setFlashMsg] = useState<string | null>(null);
   const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ctrlRef = useRef<{ move: (dir: number) => void; rotate: () => void; drop: () => void } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -285,12 +295,14 @@ export const TetrisGame: React.FC<TetrisGameProps> = ({
     };
 
     window.addEventListener("keydown", keyHandler);
+    ctrlRef.current = { move, rotate, drop };
     newPiece();
     startTime = performance.now();
     requestAnimationFrame(gameLoop);
 
     return () => {
       running = false;
+      ctrlRef.current = null;
       window.removeEventListener("keydown", keyHandler);
       if (flashTimeout.current) clearTimeout(flashTimeout.current);
     };
@@ -317,12 +329,13 @@ export const TetrisGame: React.FC<TetrisGameProps> = ({
           {timeLeft}s
         </span>
       </div>
-      <div className="relative">
+      <div className="relative" style={{ width: CANVAS_W * canvasScale, height: CANVAS_H * canvasScale, overflow: "hidden" }}>
         <canvas
           ref={canvasRef}
-          width={COLS * CELL}
-          height={ROWS * CELL}
+          width={CANVAS_W}
+          height={CANVAS_H}
           className="border-2 border-border"
+          style={{ transform: `scale(${canvasScale})`, transformOrigin: "top left", display: "block" }}
         />
         {flashMsg && (
           <div className="absolute inset-x-0 bottom-2 flex justify-center pointer-events-none">
@@ -332,9 +345,18 @@ export const TetrisGame: React.FC<TetrisGameProps> = ({
           </div>
         )}
       </div>
-      <p className="text-[10px] text-center text-card-foreground/70">
-        ↑ rotate &nbsp;·&nbsp; ← → move &nbsp;·&nbsp; ↓ drop
-      </p>
+      {isMobile ? (
+        <div className="flex gap-2 justify-center mt-1">
+          <button onPointerDown={() => ctrlRef.current?.move(-1)} className="w-12 h-12 flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none">←</button>
+          <button onPointerDown={() => ctrlRef.current?.rotate()} className="w-12 h-12 flex items-center justify-center text-sm font-bold bg-card/80 border-2 border-border rounded select-none">↺ rot</button>
+          <button onPointerDown={() => ctrlRef.current?.drop()} className="w-12 h-12 flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none">↓</button>
+          <button onPointerDown={() => ctrlRef.current?.move(1)} className="w-12 h-12 flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none">→</button>
+        </div>
+      ) : (
+        <p className="text-[10px] text-center text-card-foreground/70">
+          ↑ rotate &nbsp;·&nbsp; ← → move &nbsp;·&nbsp; ↓ drop
+        </p>
+      )}
     </div>
   );
 };

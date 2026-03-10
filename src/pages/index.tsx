@@ -24,6 +24,7 @@ const STAGE_METER_POINT_CUTOF = 50;
 export { STAGE_METER_POINT_CUTOF };
 
 const Index = () => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const { state, setStage, moveMeter } = useGameState();
   const [skipTutorials, setSkipTutorials] = useState(true);
   const [volume, setVolume] = useState(0.5);
@@ -482,7 +483,7 @@ const Index = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div style={{ position: "fixed", right: 16, top: 16, zIndex: 50 }}>
+      <div style={isMobile ? { position: "fixed", right: 0, top: 0, zIndex: 50, transform: "scale(0.65)", transformOrigin: "top right" } : { position: "fixed", right: 16, top: 16, zIndex: 50 }}>
         <FailMeter value={state.meterValue} />
       </div>
       <DesktopIcons />

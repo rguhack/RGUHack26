@@ -21,26 +21,30 @@ const icons = [
   { icon: <Calendar size={26} />, label: "Standup.exe", bg: "#dc2626" },
 ];
 
-export const DesktopIcons: React.FC = () => (
-  <div className="absolute top-4 left-4 flex flex-col gap-4">
-    {icons.map((item) => (
-      <div
-        key={item.label}
-        className="flex flex-col items-center gap-1 w-16 cursor-pointer group"
-      >
+export const DesktopIcons: React.FC = () => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  if (isMobile) return null;
+  return (
+    <div className="absolute top-4 left-4 flex flex-col gap-4">
+      {icons.map((item) => (
         <div
-          className="w-10 h-10 flex items-center justify-center rounded shadow-md group-hover:brightness-110 transition-[filter]"
-          style={{ background: item.bg, color: "white" }}
+          key={item.label}
+          className="flex flex-col items-center gap-1 w-16 cursor-pointer group"
         >
-          {item.icon}
+          <div
+            className="w-10 h-10 flex items-center justify-center rounded shadow-md group-hover:brightness-110 transition-[filter]"
+            style={{ background: item.bg, color: "white" }}
+          >
+            {item.icon}
+          </div>
+          <span
+            className="text-[10px] text-white text-center leading-tight px-0.5"
+            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+          >
+            {item.label}
+          </span>
         </div>
-        <span
-          className="text-[10px] text-white text-center leading-tight px-0.5"
-          style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
-        >
-          {item.label}
-        </span>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};

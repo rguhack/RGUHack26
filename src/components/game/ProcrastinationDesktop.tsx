@@ -52,7 +52,11 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
   hidden = false,
   disabled = false,
 }) => {
-  const [pos, setPos] = useState({ x: 96, y: 40 });
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [pos, setPos] = useState({
+    x: isMobile ? 8 : 96,
+    y: isMobile ? 155 : 40
+  });
   const [activeTab, setActiveTab] = useState<"cricket" | "cat" | "youtube">(
     "cricket",
   );
@@ -269,9 +273,10 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
       <div
         className="bg-[#ECE9D8] border-2 border-[#003c74] shadow-2xl flex flex-col"
         style={{
-          width: "700px",
+          width: isMobile ? "calc(100vw - 16px)" : "700px",
+          maxWidth: "700px",
           fontFamily: "Tahoma, sans-serif",
-          maxHeight: "500px",
+          maxHeight: isMobile ? "70vh" : "500px",
         }}
       >
         {/* Title Bar — drag handle */}

@@ -3,6 +3,8 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 const CELL = 24;
 const COLS = 21;
 const ROWS = 17;
+const CANVAS_W = COLS * CELL;
+const CANVAS_H = ROWS * CELL;
 const EMAIL_COUNT = 7;
 
 const MAZE: number[][] = [
@@ -85,9 +87,26 @@ interface PacmanGameProps {
 }
 
 export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isLandscape = typeof window !== "undefined" && window.innerWidth > window.innerHeight;
+
+  // More aggressive scaling for landscape mobile
+  let canvasScale = 1;
+  if (isMobile && isLandscape) {
+    canvasScale = Math.min(1, (window.innerHeight - 120) / CANVAS_H);
+  } else if (isMobile) {
+    canvasScale = Math.min(1, (window.innerWidth - 48) / CANVAS_W);
+  }
+  const scaledCanvasWidth = CANVAS_W * canvasScale;
+  const scaledCanvasHeight = CANVAS_H * canvasScale;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [emailsLeft, setEmailsLeft] = useState(EMAIL_COUNT);
   const stateRef = useRef<GameState | null>(null);
+
+  const setNextDir = useCallback((dx: number, dy: number) => {
+    if (stateRef.current) stateRef.current.nextDir = { dx, dy };
+  }, []);
 
   const initState = useCallback(() => {
     const paths: { x: number; y: number }[] = [];
@@ -385,17 +404,35 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
   }, [initState, onWin, onLose]);
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", userSelect: "none" }}>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        userSelect: "none",
+        width: isMobile ? "100%" : scaledCanvasWidth,
+        overflow: "hidden",
+        margin: "0 auto",
+        background: "#0a0a1e",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       {/* Info / Emails */}
       <div
-        className="flex justify-between w-full px-2 py-1"
-        style={{ background: "#0a0a1e" }}
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "4px 8px",
+          background: "#0a0a1e",
+          boxSizing: "border-box"
+        }}
       >
         <span
           style={{
             color: "#f7d000",
             fontFamily: "var(--font-body)",
-            fontSize: 16,
+            fontSize: 14,
           }}
         >
           Emails: {emailsLeft}
@@ -403,12 +440,78 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
       </div>
 
       {/* Canvas */}
-      <canvas
-        ref={canvasRef}
-        width={COLS * CELL}
-        height={ROWS * CELL}
-        style={{ display: "block", imageRendering: "pixelated" }}
-      />
+      <div
+        style={{
+          width: scaledCanvasWidth,
+          height: scaledCanvasHeight,
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_W}
+          height={CANVAS_H}
+          style={{
+            display: "block",
+            imageRendering: "pixelated",
+            transform: `scale(${canvasScale})`,
+            transformOrigin: "top left",
+          }}
+        />
+      </div>
+
+      {/* Mobile D-pad */}
+      {isMobile && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: isLandscape ? 1 : 3,
+            paddingTop: isLandscape ? 3 : 6,
+            paddingBottom: isLandscape ? 2 : 4,
+            background: "#0a0a1e",
+            width: "100%",
+            boxSizing: "border-box"
+          }}
+        >
+          <button
+            onPointerDown={() => setNextDir(0, -1)}
+            className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
+            style={{
+              width: isLandscape ? "32px" : "40px",
+              height: isLandscape ? "32px" : "40px"
+            }}
+          >↑</button>
+          <div className="flex gap-1 justify-center">
+            <button
+              onPointerDown={() => setNextDir(-1, 0)}
+              className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
+              style={{
+                width: isLandscape ? "32px" : "40px",
+                height: isLandscape ? "32px" : "40px"
+              }}
+            >←</button>
+            <button
+              onPointerDown={() => setNextDir(1, 0)}
+              className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
+              style={{
+                width: isLandscape ? "32px" : "40px",
+                height: isLandscape ? "32px" : "40px"
+              }}
+            >→</button>
+          </div>
+          <button
+            onPointerDown={() => setNextDir(0, 1)}
+            className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
+            style={{
+              width: isLandscape ? "32px" : "40px",
+              height: isLandscape ? "32px" : "40px"
+            }}
+          >↓</button>
+        </div>
+      )}
 
       {/* Status Bar */}
       <div
@@ -416,7 +519,12 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
           background: "#000080",
           color: "#fff",
           padding: "2px 6px",
-          fontSize: 12,
+          fontSize: 11,
+          width: "100%",
+          boxSizing: "border-box",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
         }}
       >
         Avoid the 6 coworkers!
