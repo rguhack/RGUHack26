@@ -125,16 +125,16 @@ export const PunishmentScreen: React.FC<PunishmentScreenProps> = ({
   }, [onComplete, gameStage, punishmentType]);
 
   return (
-    <div className="fixed inset-0 z-[60] bg-foreground/60 flex items-center justify-center">
-      <div className="xp-window max-w-fit max-h-fit flex flex-col justify-center items-center">
-        <div className="xp-title-bar w-full">
+    <div className="fixed inset-0 z-[60] bg-foreground/60 flex items-center justify-center overflow-auto p-2">
+      <div className="xp-window max-w-[95vw] max-h-[88vh] flex flex-col overflow-hidden">
+        <div className="xp-title-bar w-full flex-shrink-0">
           <div className="flex items-center gap-1.5">
             {punishment.icon}
             <span className="text-xs">{punishment.title}</span>
           </div>
         </div>
         <div
-          className="xp-window-body w-full"
+          className="xp-window-body overflow-auto"
           style={punishmentType === "email" ? { padding: 0 } : undefined}
         >
           {punishmentType === "email" ? (

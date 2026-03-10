@@ -17,12 +17,26 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
   setVolume,
 }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isLandscape =
+    typeof window !== "undefined" && window.innerWidth > window.innerHeight;
+  const isMobileLandscape = isMobile && isLandscape;
+  const settingsPanelWidth = isMobile
+    ? Math.max(180, window.innerWidth - 80)
+    : 320;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden font-sans bg-background">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-y-auto font-sans bg-background">
       <div className="absolute inset-0 bg-foreground/10" />
 
-      <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-6 text-center w-full">
+      <div
+        className="relative z-10 flex flex-col items-center justify-center px-3 sm:px-6 text-center w-full"
+        style={{
+          minHeight: "100vh",
+          paddingTop: isMobileLandscape ? 8 : 24,
+          paddingBottom: isMobileLandscape ? 76 : 96,
+        }}
+      >
         <div className="xp-window w-[680px] max-w-[95vw]">
           <div className="xp-title-bar">
             <div className="flex items-center gap-1.5">
@@ -38,15 +52,18 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             </button>
           </div>
 
-          <div className="xp-window-body flex flex-col items-center gap-8 p-9">
+          <div
+            className="xp-window-body flex flex-col items-center p-3 md:p-9"
+            style={{ gap: isMobileLandscape ? 10 : 32 }}
+          >
             <div className="select-none flex flex-col gap-1">
-              <h1 className="pixel-text text-4xl md:text-5xl font-bold tracking-wide text-foreground">
+              <h1 className="pixel-text text-2xl md:text-5xl font-bold tracking-wide text-foreground">
                 LIAR...
               </h1>
-              <h1 className="pixel-text text-4xl md:text-5xl font-bold tracking-wide text-foreground">
+              <h1 className="pixel-text text-2xl md:text-5xl font-bold tracking-wide text-foreground">
                 CHEATER...
               </h1>
-              <h1 className="pixel-text text-5xl md:text-6xl font-extrabold tracking-wider text-destructive">
+              <h1 className="pixel-text text-3xl md:text-6xl font-extrabold tracking-wider text-destructive">
                 FIRED.
               </h1>
             </div>
@@ -57,25 +74,25 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
                   <span className="text-xs font-bold">BOSS MESSAGE</span>
                 </div>
               </div>
-              <div className="xp-window-body flex flex-col gap-6 p-5">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col gap-14 flex-1 justify-center">
-                    <p className="text-base font-bold leading-relaxed text-left whitespace-pre-wrap">
+              <div className="xp-window-body flex flex-col gap-4 md:gap-6 p-3 md:p-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-4 md:gap-8 flex-1 justify-center">
+                    <p className="text-xs sm:text-sm md:text-base font-bold leading-relaxed text-left whitespace-pre-wrap">
                       "I hate liars and cheaters. Why are you hired if you don't
                       do your job?{" "}
                       <span className="text-destructive">Focus on work!</span>"
                     </p>
                     <div className="flex justify-start">
                       <button
-                        className="xp-button-primary text-xs px-4 py-0.5"
+                        className="xp-button-primary text-[11px] sm:text-xs px-3 sm:px-4 py-0.5"
                         onClick={onStart}
                       >
                         I'm ready to get fired!
                       </button>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    <div className="relative w-32 h-32">
+                  <div className="hidden sm:flex flex-col items-center flex-shrink-0">
+                    <div className="relative w-24 h-24 md:w-32 md:h-32">
                       <img
                         src="/boss-baby.jpeg"
                         alt="Boss Baby"
@@ -94,9 +111,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
         </div>
       </div>
 
-      <div className="absolute bottom-3 left-0 right-0 z-30 flex justify-center px-4">
+      <div className="fixed bottom-2 left-0 right-0 z-30 flex justify-center px-2">
         <div
-          className="w-full max-w-[900px] flex items-center justify-between gap-3 px-3 py-2"
+          className="w-full max-w-[900px] flex items-center justify-between gap-2 px-3 py-2"
           style={{
             background:
               "linear-gradient(180deg, hsl(0,0%,100%) 0%, hsl(0,0%,85%) 100%)",
@@ -105,7 +122,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
               "hsl(0,0%,100%) hsl(220,10%,55%) hsl(220,10%,55%) hsl(0,0%,100%)",
           }}
         >
-          <div className="text-xs text-foreground/80">
+          <div className="hidden md:block text-xs text-foreground/80">
             (Disclaimer: This is not representative of us developers; we are
             very, very, very good employees.)
           </div>
@@ -114,13 +131,13 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             <div
               style={{
                 overflow: "hidden",
-                width: settingsOpen ? 320 : 0,
+                width: settingsOpen ? settingsPanelWidth : 0,
                 transition: "width 0.25s ease",
               }}
             >
               <div
                 style={{
-                  width: 320,
+                  width: settingsPanelWidth,
                   display: "flex",
                   flexDirection: "column",
                   gap: 4,

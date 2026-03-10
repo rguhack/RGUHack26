@@ -52,7 +52,11 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
   hidden = false,
   disabled = false,
 }) => {
-  const [pos, setPos] = useState({ x: 96, y: 40 });
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [pos, setPos] = useState({
+    x: isMobile ? 8 : 96,
+    y: isMobile ? 155 : 40,
+  });
   const [activeTab, setActiveTab] = useState<"cricket" | "cat" | "youtube">(
     "cricket",
   );
@@ -71,7 +75,8 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
         const currentInnings = prev[teamKey];
 
         const australiaChasedTarget =
-          prev.battingTeam === "AUSTRALIA" && prev.australia.runs > prev.india.runs;
+          prev.battingTeam === "AUSTRALIA" &&
+          prev.australia.runs > prev.india.runs;
 
         if (australiaChasedTarget) {
           return { ...prev, battingTeam: "DONE" };
@@ -136,22 +141,25 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
         const nextState: MatchState =
           teamKey === "india"
             ? {
-              ...prev,
-              india: nextInnings,
-            }
+                ...prev,
+                india: nextInnings,
+              }
             : {
-              ...prev,
-              australia: nextInnings,
-            };
+                ...prev,
+                australia: nextInnings,
+              };
 
         const ballPrefix =
-          prev.battingTeam === "INDIA" ? `IND ${formatOvers(nextInnings.balls)}` : `AUS ${formatOvers(nextInnings.balls)}`;
+          prev.battingTeam === "INDIA"
+            ? `IND ${formatOvers(nextInnings.balls)}`
+            : `AUS ${formatOvers(nextInnings.balls)}`;
 
         nextState.recentBalls = [...prev.recentBalls.slice(-11), ballSymbol];
         nextState.lastBallCommentary = `${ballPrefix}: ${ballCommentary}`;
 
         const chaseCompleted =
-          prev.battingTeam === "AUSTRALIA" && nextState.australia.runs > nextState.india.runs;
+          prev.battingTeam === "AUSTRALIA" &&
+          nextState.australia.runs > nextState.india.runs;
 
         if (chaseCompleted) {
           return {
@@ -188,7 +196,10 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
   const australiaRuns = match.australia.runs;
   const target = indiaRuns + 1;
   const runsNeeded = Math.max(0, target - australiaRuns);
-  const ballsRemaining = Math.max(0, MAX_BALLS_PER_INNINGS - match.australia.balls);
+  const ballsRemaining = Math.max(
+    0,
+    MAX_BALLS_PER_INNINGS - match.australia.balls,
+  );
   const requiredRate =
     match.battingTeam === "AUSTRALIA" && ballsRemaining > 0 && runsNeeded > 0
       ? ((runsNeeded * 6) / ballsRemaining).toFixed(2)
@@ -269,9 +280,10 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
       <div
         className="bg-[#ECE9D8] border-2 border-[#003c74] shadow-2xl flex flex-col"
         style={{
-          width: "700px",
+          width: isMobile ? "calc(100vw - 16px)" : "700px",
+          maxWidth: "700px",
           fontFamily: "Tahoma, sans-serif",
-          maxHeight: "500px",
+          maxHeight: isMobile ? "70vh" : "500px",
         }}
       >
         {/* Title Bar — drag handle */}
@@ -314,30 +326,33 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab("cricket")}
-            className={`${activeTab === "cricket"
-              ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
-              : "bg-[#c0c0c0] border border-[#808080]"
-              } px-3 py-1 text-[11px] flex items-center gap-1`}
+            className={`${
+              activeTab === "cricket"
+                ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
+                : "bg-[#c0c0c0] border border-[#808080]"
+            } px-3 py-1 text-[11px] flex items-center gap-1`}
           >
             🏏 Cricket Live
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("cat")}
-            className={`${activeTab === "cat"
-              ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
-              : "bg-[#c0c0c0] border border-[#808080]"
-              } px-3 py-1 text-[11px] flex items-center gap-1`}
+            className={`${
+              activeTab === "cat"
+                ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
+                : "bg-[#c0c0c0] border border-[#808080]"
+            } px-3 py-1 text-[11px] flex items-center gap-1`}
           >
             🐱 Cat Videos
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("youtube")}
-            className={`${activeTab === "youtube"
-              ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
-              : "bg-[#c0c0c0] border border-[#808080]"
-              } px-3 py-1 text-[11px] flex items-center gap-1`}
+            className={`${
+              activeTab === "youtube"
+                ? "bg-[#ECE9D8] border-t border-l border-r border-white border-b-0 font-bold"
+                : "bg-[#c0c0c0] border border-[#808080]"
+            } px-3 py-1 text-[11px] flex items-center gap-1`}
           >
             ▶️ YouTube
           </button>
@@ -393,14 +408,18 @@ export const ProcrastinationDesktop: React.FC<ProcrastinationDesktopProps> = ({
                 <div className="bg-white border border-[#808080] px-2 py-1 text-xs mb-3">
                   <p className="font-bold text-gray-700 mb-1">Last Over Feed</p>
                   <p className="font-mono tracking-wide">
-                    {match.recentBalls.length > 0 ? match.recentBalls.join(" ") : "No balls yet"}
+                    {match.recentBalls.length > 0
+                      ? match.recentBalls.join(" ")
+                      : "No balls yet"}
                   </p>
                 </div>
                 <div className="text-center mt-3">
                   <p className={`text-sm font-bold ${statusColorClass}`}>
                     {liveLine}
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">{match.lastBallCommentary}</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {match.lastBallCommentary}
+                  </p>
                 </div>
               </div>
               <div className="flex justify-center gap-6 text-xs mt-6 items-center">

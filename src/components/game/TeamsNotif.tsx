@@ -14,7 +14,7 @@ export function TeamsNotif({ onDismiss, onJoin }: TeamsNotifProps) {
       className="fixed bottom-14 right-4 z-50"
       style={{ fontFamily: "Tahoma, 'MS Sans Serif', sans-serif" }}
     >
-      <div className="w-[325px] overflow-hidden border-2 border-[#0a246a] shadow-[6px_6px_0px_#808080]">
+      <div className="w-[min(325px,90vw)] overflow-hidden border-2 border-[#0a246a] shadow-[6px_6px_0px_#808080]">
         {/* XP Title Bar */}
         <div className="flex items-center bg-[#0a246a] px-3 py-2 text-white">
           <span className="font-bold text-sm">💬 Microsoft Teams</span>
