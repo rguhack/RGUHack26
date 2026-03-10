@@ -88,7 +88,8 @@ interface PacmanGameProps {
 
 export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-  const isLandscape = typeof window !== "undefined" && window.innerWidth > window.innerHeight;
+  const isLandscape =
+    typeof window !== "undefined" && window.innerWidth > window.innerHeight;
 
   // More aggressive scaling for landscape mobile
   let canvasScale = 1;
@@ -425,7 +426,7 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
           justifyContent: "space-between",
           padding: "4px 8px",
           background: "#0a0a1e",
-          boxSizing: "border-box"
+          boxSizing: "border-box",
         }}
       >
         <span
@@ -473,7 +474,7 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
             paddingBottom: isLandscape ? 2 : 4,
             background: "#0a0a1e",
             width: "100%",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
         >
           <button
@@ -481,35 +482,43 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
             className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
             style={{
               width: isLandscape ? "32px" : "40px",
-              height: isLandscape ? "32px" : "40px"
+              height: isLandscape ? "32px" : "40px",
             }}
-          >↑</button>
+          >
+            ↑
+          </button>
           <div className="flex gap-1 justify-center">
             <button
               onPointerDown={() => setNextDir(-1, 0)}
               className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
               style={{
                 width: isLandscape ? "32px" : "40px",
-                height: isLandscape ? "32px" : "40px"
+                height: isLandscape ? "32px" : "40px",
               }}
-            >←</button>
+            >
+              ←
+            </button>
             <button
               onPointerDown={() => setNextDir(1, 0)}
               className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
               style={{
                 width: isLandscape ? "32px" : "40px",
-                height: isLandscape ? "32px" : "40px"
+                height: isLandscape ? "32px" : "40px",
               }}
-            >→</button>
+            >
+              →
+            </button>
           </div>
           <button
             onPointerDown={() => setNextDir(0, 1)}
             className={`flex items-center justify-center text-lg font-bold bg-card/80 border-2 border-border rounded select-none active:opacity-70`}
             style={{
               width: isLandscape ? "32px" : "40px",
-              height: isLandscape ? "32px" : "40px"
+              height: isLandscape ? "32px" : "40px",
             }}
-          >↓</button>
+          >
+            ↓
+          </button>
         </div>
       )}
 
@@ -524,7 +533,7 @@ export const PacmanGame: React.FC<PacmanGameProps> = ({ onWin, onLose }) => {
           boxSizing: "border-box",
           whiteSpace: "nowrap",
           overflow: "hidden",
-          textOverflow: "ellipsis"
+          textOverflow: "ellipsis",
         }}
       >
         Avoid the 6 coworkers!

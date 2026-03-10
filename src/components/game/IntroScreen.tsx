@@ -21,7 +21,9 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
   const isLandscape =
     typeof window !== "undefined" && window.innerWidth > window.innerHeight;
   const isMobileLandscape = isMobile && isLandscape;
-  const settingsPanelWidth = isMobile ? Math.max(180, window.innerWidth - 80) : 320;
+  const settingsPanelWidth = isMobile
+    ? Math.max(180, window.innerWidth - 80)
+    : 320;
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-y-auto font-sans bg-background">

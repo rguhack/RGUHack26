@@ -57,8 +57,7 @@ const Index = () => {
     const audio = bgAudioRef.current;
     if (!audio || !isAudioRunning) return;
 
-    void audio.play().catch(() => {
-    });
+    void audio.play().catch(() => {});
   }, [isAudioRunning]);
 
   useEffect(() => {
@@ -483,7 +482,20 @@ const Index = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div style={isMobile ? { position: "fixed", right: 0, top: 0, zIndex: 50, transform: "scale(0.65)", transformOrigin: "top right" } : { position: "fixed", right: 16, top: 16, zIndex: 50 }}>
+      <div
+        style={
+          isMobile
+            ? {
+                position: "fixed",
+                right: 0,
+                top: 0,
+                zIndex: 50,
+                transform: "scale(0.65)",
+                transformOrigin: "top right",
+              }
+            : { position: "fixed", right: 16, top: 16, zIndex: 50 }
+        }
+      >
         <FailMeter value={state.meterValue} />
       </div>
       <DesktopIcons />
@@ -719,10 +731,7 @@ const Index = () => {
         />
       )}
 
-      <Taskbar
-        volume={volume}
-        setVolume={setVolume}
-      />
+      <Taskbar volume={volume} setVolume={setVolume} />
     </div>
   );
 };

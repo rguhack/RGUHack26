@@ -65,7 +65,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({ volume, setVolume }) => {
                 min={0}
                 max={100}
                 value={Math.round(volume * 100)}
-                onChange={(event) => setVolume(Number(event.target.value) / 100)}
+                onChange={(event) =>
+                  setVolume(Number(event.target.value) / 100)
+                }
                 className="w-24 accent-primary"
               />
               <span className="text-[10px] font-bold w-8 text-right">

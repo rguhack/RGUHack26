@@ -17,7 +17,9 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const CANVAS_W = 350;
   const CANVAS_H = 240;
-  const canvasScale = isMobile ? Math.min(1, (window.innerWidth - 48) / CANVAS_W) : 1;
+  const canvasScale = isMobile
+    ? Math.min(1, (window.innerWidth - 48) / CANVAS_W)
+    : 1;
 
   // Physics Constants for perfectly consistent speed
   const CONSTANT_VX = 4.0;
@@ -85,7 +87,9 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
       g.paddleY = Math.max(0, Math.min(CANVAS_H - 60, relY - 30));
     };
     canvas.addEventListener("touchmove", touchHandler, { passive: false });
-    canvas.addEventListener("touchstart", touchHandler as EventListener, { passive: true });
+    canvas.addEventListener("touchstart", touchHandler as EventListener, {
+      passive: true,
+    });
 
     const PADDLE_SPEED = 5;
     const AI_PADDLE_SPEED = 2.2; // Optimized for consistent ball speed
@@ -102,12 +106,16 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
       if (g.framesSinceScore > RALLY_TIMEOUT_FRAMES) {
         const excessFrames = g.framesSinceScore - RALLY_TIMEOUT_FRAMES;
         const boost = excessFrames * 0.02; // linear: add 0.02 pixels/frame per excess frame
-        
+
         // Calculate base speed magnitude
-        const baseMagnitude = Math.sqrt(CONSTANT_VX * CONSTANT_VX + BALL_SPEED_Y_START * BALL_SPEED_Y_START);
-        const currentMagnitude = Math.sqrt(g.ballVX * g.ballVX + g.ballVY * g.ballVY);
+        const baseMagnitude = Math.sqrt(
+          CONSTANT_VX * CONSTANT_VX + BALL_SPEED_Y_START * BALL_SPEED_Y_START,
+        );
+        const currentMagnitude = Math.sqrt(
+          g.ballVX * g.ballVX + g.ballVY * g.ballVY,
+        );
         const targetMagnitude = baseMagnitude + boost;
-        
+
         // Scale velocity to new magnitude while preserving direction
         const scale = targetMagnitude / currentMagnitude;
         g.ballVX *= scale;
@@ -315,7 +323,10 @@ export const PingPongGame: React.FC<PingPongGameProps> = ({
       </div>
 
       <p className="text-xs text-card-foreground">
-        {isMobile ? "Touch the canvas to move your paddle." : "W/S or ↑/↓ to move."} First to 3 wins!
+        {isMobile
+          ? "Touch the canvas to move your paddle."
+          : "W/S or ↑/↓ to move."}{" "}
+        First to 3 wins!
       </p>
 
       <div

@@ -29,13 +29,18 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
   bodyStyle,
 }) => {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-  const effectiveWidth = isMobile ? Math.min(width, window.innerWidth - 16) : width;
+  const effectiveWidth = isMobile
+    ? Math.min(width, window.innerWidth - 16)
+    : width;
 
   const [pos, setPos] = useState({
     x: isMobile
       ? Math.max(8, (window.innerWidth - effectiveWidth) / 2)
       : (initialX ??
-        Math.max(50, (window.innerWidth - width) / 2 + Math.random() * 60 - 30)),
+        Math.max(
+          50,
+          (window.innerWidth - width) / 2 + Math.random() * 60 - 30,
+        )),
     y: isMobile
       ? 155
       : (initialY ??

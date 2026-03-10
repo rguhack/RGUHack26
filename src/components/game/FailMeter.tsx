@@ -16,7 +16,11 @@ export const FailMeter: React.FC<FailMeterProps> = ({ value }) => {
   const needleY = cy - r * 0.82 * Math.sin(radians);
 
   const status =
-    value <= -STAGE_METER_POINT_CUTOF ? "CRITICAL" : value <= STAGE_METER_POINT_CUTOF ? "NEUTRAL" : "EXCELLENT";
+    value <= -STAGE_METER_POINT_CUTOF
+      ? "CRITICAL"
+      : value <= STAGE_METER_POINT_CUTOF
+        ? "NEUTRAL"
+        : "EXCELLENT";
 
   const statusColor =
     value <= -STAGE_METER_POINT_CUTOF

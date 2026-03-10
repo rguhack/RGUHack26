@@ -88,7 +88,7 @@ export const BossBaby: React.FC<BossBabyProps> = ({
                   <button className="xp-button-primary" onClick={onDismiss}>
                     {dismissLabel ??
                       (message.toLowerCase().includes("email") ||
-                        message.toLowerCase().includes("outlook")
+                      message.toLowerCase().includes("outlook")
                         ? "AGH, no..."
                         : "AGH, fine...")}
                   </button>
