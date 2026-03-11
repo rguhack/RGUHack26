@@ -1,0 +1,16 @@
+services:
+  liar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    networks:
+      default:
+        aliases:
+          - liar
+networks:
+  default:
+    name: zoraxy_proxy
+    external: true

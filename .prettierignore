@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Logs
+*.log
+
+# Environment and generated lock files
+.env
+.env.*
+bun.lockb
+
+# OS/editor/project metadata
+.DS_Store
+.vscode/
+.idea/
+.vite/
+
+# Static/generated assets
+public/
